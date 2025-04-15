@@ -27,14 +27,11 @@ def create_tmux_session():
         pass
 
 
-largest_window_id = int($(tmux list-windows -t @(tmux_session_name) | awk '{print $1}' | sed 's/://g' | sort -n | tail -1).strip() or 0)
-
 def run_cmd(cmd):
-    global largest_window_id
-    largest_window_id += 1
-    tmux new-window -t @(tmux_session_name) -n @(largest_window_id)
-    tmux send-keys -t @(tmux_session_name):@(largest_window_id) @(cmd) Enter
-    print(f"\t Window: {largest_window_id} --  {cmd}")
+    window_index=$(tmux new-window -t @(TMUX_SESSION_NAME) -P -F "#{window_index}")
+    tmux send-keys -t @(TMUX_SESSION_NAME):@(window_index) @(cmd) Enter
+    print(f"\t Window: {window_index} --  {cmd}")
+
 
 create_tmux_session()
 
